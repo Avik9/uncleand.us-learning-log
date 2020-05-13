@@ -1,6 +1,0 @@
-# Commands and thier functions
-
-## Chapter 4
-
-#### Command - What it does - Meaning
-pwd - print working directory - prints the path to the current location from root
