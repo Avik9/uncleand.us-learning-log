@@ -10,7 +10,7 @@ const App = () => {
   const [notes, setNotes] = useState([])
   const [newNote, setNewNote] = useState('')
   const [showAll, setShowAll] = useState(true)
-  const [errorMessage, setErrorMessage] = useState('some error happened...')
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     noteService
@@ -20,31 +20,42 @@ const App = () => {
       })
   }, [])
 
-  const toggleImportanceOf = id => {
+  const toggleImportanceOf = (id) => {
+    console.log("Id:", id)
+
+    const url = `http://localhost:3001/notes/${id}`
     const note = notes.find(n => n.id === id)
+    console.log("Note:", note)
+
     const changedNote = { ...note, important: !note.important }
 
     noteService
       .update(id, changedNote)
       .then(returnedNote => {
         setNotes(notes.map(note => note.id !== id ? note : returnedNote))
+        console.log("Notes:", notes)
       })
       .catch(error => {
+        console.log("Notes:", notes)
+
+        console.log("Error:", error)
+
         setErrorMessage(
           `Note '${note.content}' was already removed from server`
         )
         setTimeout(() => {
           setErrorMessage(null)
         }, 5000)
-        setNotes(notes.filter(n => n.id !== id))
       })
   }
+
   const addNote = (event) => {
     event.preventDefault()
     const noteObject = {
       content: newNote,
       date: new Date().toISOString(),
-      important: Math.random() > 0.5
+      important: Math.random() > 0.5,
+      id: notes.length + 1,
     }
 
     noteService
@@ -56,7 +67,6 @@ const App = () => {
   }
 
   const handleNoteChange = (event) => {
-    console.log(event.target.value)
     setNewNote(event.target.value)
   }
 
